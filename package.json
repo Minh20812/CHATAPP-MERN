@@ -1,0 +1,32 @@
+{
+  "name": "manage-storage",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "backend": "nodemon backend/index.js",
+    "frontend": "npm run dev --prefix frontend",
+    "dev": "npx npm-run-all -p backend frontend"
+  },
+  "keywords": [],
+  "author": "Minh",
+  "license": "ISC",
+  "description": "Chat App",
+  "dependencies": {
+    "@heroicons/react": "^2.1.5",
+    "@reduxjs/toolkit": "^2.2.7",
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.20.0",
+    "heroicons": "^2.1.5",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.6.1",
+    "nodemon": "^3.1.4",
+    "npm-run-all": "^4.1.5",
+    "path": "^0.12.7",
+    "react-redux": "^9.1.2",
+    "react-toastify": "^10.0.5"
+  }
+}
