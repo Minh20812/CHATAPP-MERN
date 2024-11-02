@@ -42,71 +42,80 @@ const Register = () => {
         navigate(redirect);
         toast.success("User successfully registered");
       } catch (err) {
-        console.log(err);
-        toast.error(err.data.message);
+        const message =
+          err?.data?.message ||
+          err.error ||
+          "An error occurred during registration";
+        toast.error(message);
+        console.error("Registration error:", err);
       }
     }
   };
 
   return (
-    <section className="pl-[10rem] flex flex-wrap">
-      <div className="mr-[4rem] mt-[5rem]">
-        <h1 className="text-2xl font-semibold mb-4">Register</h1>
+    <section className="min-h-screen p-4 md:p-8 lg:p-12 flex items-center justify-center">
+      <div className="w-full max-w-md md:max-w-lg bg-white rounded-lg shadow-md p-6 md:p-8">
+        <h1 className="text-2xl md:text-3xl font-semibold mb-6 text-center">
+          Register
+        </h1>
 
-        <form onSubmit={submitHandler} className="container w-[40rem]">
-          <div className="my-[2rem]">
-            <label htmlFor="name" className="block text-sm font-medium ">
+        <form onSubmit={submitHandler} className="space-y-4 md:space-y-6">
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium mb-1">
               Name
             </label>
             <input
               type="text"
               id="name"
-              className="mt-1 p-2 border rounded w-full"
+              className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
               placeholder="Enter name"
               value={username}
               onChange={(e) => setName(e.target.value)}
             />
           </div>
 
-          <div className="my-[2rem]">
-            <label htmlFor="email" className="block text-sm font-medium ">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium mb-1">
               Email Address
             </label>
             <input
               type="email"
               id="email"
-              className="mt-1 p-2 border rounded w-full"
+              className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
               placeholder="Enter email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 
-          <div className="my-[2rem]">
-            <label htmlFor="password" className="block text-sm font-medium ">
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium mb-1"
+            >
               Password
             </label>
             <input
               type="password"
               id="password"
-              className="mt-1 p-2 border rounded w-full"
+              className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
               placeholder="Enter password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
 
-          <div className="my-[2rem]">
+          <div>
             <label
               htmlFor="confirmPassword"
-              className="block text-sm font-medium "
+              className="block text-sm font-medium mb-1"
             >
               Confirm Password
             </label>
             <input
               type="password"
               id="confirmPassword"
-              className="mt-1 p-2 border rounded w-full"
+              className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
               placeholder="Confirm password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
@@ -116,22 +125,27 @@ const Register = () => {
           <button
             disabled={isLoading}
             type="submit"
-            className="bg-pink-500  px-4 py-2 rounded cursor-pointer my-[1rem]"
+            className="w-full bg-pink-500 hover:bg-pink-600 text-white font-medium py-2.5 rounded-lg transition-colors duration-200 ease-in-out disabled:opacity-70"
           >
             {isLoading ? "Registering..." : "Register"}
           </button>
 
           {isLoading && <Loader />}
         </form>
-        <GoogleLogin />
-        <div className="mt-4">
-          <p className="">
-            Already have an account?{" "}
-            <Link to={"/login"} className="text-pink-500 hover:underline">
-              Login
-            </Link>
-          </p>
+
+        <div className="mt-6">
+          <GoogleLogin />
         </div>
+
+        <p className="mt-4 text-center text-sm">
+          Already have an account?{" "}
+          <Link
+            to={"/login"}
+            className="text-pink-500 hover:underline font-medium"
+          >
+            Login
+          </Link>
+        </p>
       </div>
     </section>
   );

@@ -9,8 +9,17 @@ const createUser = asyncHandler(async (req, res) => {
     throw new Error("Please provide all the required fields");
   }
 
-  const userExists = await User.findOne({ email });
-  if (userExists) res.status(400).send("User already exists");
+  const userExists = await User.findOne({
+    $or: [{ email: email.toLowerCase() }, { username: username.toLowerCase() }],
+  });
+  if (userExists) {
+    res.status(400);
+    throw new Error(
+      userExists.email === email.toLowerCase()
+        ? "Email already registered"
+        : "Username already taken"
+    );
+  }
 
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
@@ -103,17 +112,16 @@ const loginGoogleUser = asyncHandler(async (req, res) => {
 });
 
 const logoutCurrentUser = asyncHandler(async (req, res) => {
-  res.cookie("jwt", "", {
-    httyOnly: true,
-    expires: new Date(0),
-  });
-
-  res.status(200).json({ message: "Logged out successfully" });
-});
-
-const getAllUsers = asyncHandler(async (req, res) => {
-  const users = await User.find({});
-  res.json(users);
+  try {
+    res.cookie("jwt", "", {
+      httpOnly: true,
+      expires: new Date(0),
+    });
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.error("Logout error:", error);
+    res.status(500).json({ message: "Logout failed" });
+  }
 });
 
 const getCurrentUserProfile = asyncHandler(async (req, res) => {
@@ -212,7 +220,6 @@ export {
   loginUser,
   loginGoogleUser,
   logoutCurrentUser,
-  getAllUsers,
   getCurrentUserProfile,
   updateCurrentUserProfile,
   deleteUserById,

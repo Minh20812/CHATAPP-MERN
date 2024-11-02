@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SideComponent from "../components/SideComponent";
-import MainDashboard from "../screens/SideScreens/dashboard/MainDashBoard";
+import MainDashboard from "../screens/SideScreens/dashboard/MainDashBoard.jsx";
 
 const MainRouter = () => {
   return (

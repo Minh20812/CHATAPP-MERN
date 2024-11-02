@@ -4,7 +4,6 @@ import {
   loginUser,
   loginGoogleUser,
   logoutCurrentUser,
-  getAllUsers,
   getCurrentUserProfile,
   updateCurrentUserProfile,
   deleteUserById,
@@ -16,10 +15,7 @@ import { authenticate, authorizeAdmin } from "../middlewares/authMiddleWare.js";
 
 const router = express.Router();
 
-router
-  .route("/")
-  .post(createUser)
-  .get(authenticate, authorizeAdmin, getAllUsers);
+router.route("/").post(createUser);
 router.post("/auth", loginUser);
 router.post("/login-google", loginGoogleUser);
 router.post("/logout", logoutCurrentUser);
