@@ -55,16 +55,7 @@ const SideComponent = () => {
 
         {/* Sidebar Links */}
         <div className="flex flex-col space-y-4 p-4 mt-8">
-          {[
-            { to: "/", label: "Dashboard" },
-            { to: "/addTask", label: "+ Add Task" },
-            { to: "/typingpractice", label: "Typing Practice" },
-            { to: "/inbox", label: "Inbox" },
-            { to: "/today", label: "Today" },
-            { to: "/upcoming", label: "Upcoming" },
-            { to: "/filter&labels", label: "Filter & Search" },
-            { to: "/completed", label: "Completed & Expired" },
-          ].map((link) => (
+          {[{ to: "/", label: "Dashboard" }].map((link) => (
             <Link
               key={link.to}
               to={link.to}
