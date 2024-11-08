@@ -2,10 +2,10 @@ import { useState, Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { useLogoutMutation } from "../redux/api/userApiSlice";
-import { logout } from "../redux/feature/auth/authSlice";
+import { useLogoutMutation } from "../../redux/api/userApiSlice";
+import { logout } from "../../redux/feature/auth/authSlice";
 
-const SideComponent = () => {
+const MenuComponent = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { userInfo } = useSelector((state) => state.auth);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -33,29 +33,29 @@ const SideComponent = () => {
     <div>
       {/* Toggle Button for Small Screens */}
       <button
-        className="block md:hidden p-2 bg-gray-800 text-white"
+        className="block p-2 bg-gray-800 text-white"
         onClick={toggleSidebar}
       >
-        Menu
+        ☰
       </button>
 
       {/* Sidebar Container */}
       <div
         className={`fixed inset-y-0 left-0 transform ${
           showSidebar ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0 transition-transform duration-300 ease-in-out z-50 bg-black text-white w-64 md:w-1/4 xl:w-1/5 flex flex-col justify-between h-full`}
+        } transition-transform duration-300 ease-in-out z-50 bg-black text-white w-64 md:w-1/4 xl:w-1/5 flex flex-col justify-between h-full`}
       >
         {/* Close Button for Mobile */}
         <button
-          className="absolute top-4 right-4 md:hidden text-white"
+          className="absolute top-4 right-4 text-white"
           onClick={toggleSidebar}
         >
-          X
+          ✕
         </button>
 
         {/* Sidebar Links */}
         <div className="flex flex-col space-y-4 p-4 mt-8">
-          {[{ to: "/", label: "Dashboard" }].map((link) => (
+          {[{ to: "/", label: "All Chat" }].map((link) => (
             <Link
               key={link.to}
               to={link.to}
@@ -94,7 +94,7 @@ const SideComponent = () => {
                     to="/admin/dashboard"
                     className="block px-4 py-2 hover:bg-gray-700"
                   >
-                    Dashboard
+                    All Chat
                   </Link>
                   <Link
                     to="/admin/productlist"
@@ -189,4 +189,4 @@ const SideComponent = () => {
   );
 };
 
-export default SideComponent;
+export default MenuComponent;

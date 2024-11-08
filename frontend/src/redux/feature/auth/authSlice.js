@@ -1,9 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  userInfo: localStorage.getItem("userInfo")
-    ? JSON.parse(localStorage.getItem("userInfo"))
-    : null,
+  userInfo: (() => {
+    const userInfo = localStorage.getItem("userInfo");
+    const expirationTime = localStorage.getItem("expirationTime");
+
+    if (userInfo && expirationTime) {
+      const now = new Date().getTime();
+      if (now > Number(expirationTime)) {
+        localStorage.clear();
+        return null;
+      }
+      return JSON.parse(userInfo);
+    }
+    return null;
+  })(),
 };
 
 const authSlice = createSlice({

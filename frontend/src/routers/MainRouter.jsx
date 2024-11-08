@@ -1,6 +1,8 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import SideComponent from "../components/SideComponent";
+import MenuComponent from "../components/sidebar/MenuComponent.jsx";
+import SearchComponent from "../components/sidebar/SearchComponent.jsx";
+import TabComponent from "../components/sidebar/TabComponent.jsx";
 import MainDashboard from "../screens/SideScreens/dashboard/MainDashBoard.jsx";
 
 const MainRouter = () => {
@@ -8,10 +10,14 @@ const MainRouter = () => {
     <>
       <BrowserRouter>
         <div className="flex">
-          <div className=" w-1/6">
-            <SideComponent />
+          <div className=" w-2/5">
+            <div className=" flex">
+              <MenuComponent />
+              <SearchComponent />
+            </div>
+            <TabComponent />
           </div>
-          <div className=" flex justify-center items-center  h-full w-5/6">
+          <div className=" flex justify-center items-center  h-full w-4/5">
             <Routes>
               <Route path="/" element={<MainDashboard />} />
             </Routes>
