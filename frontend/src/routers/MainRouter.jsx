@@ -20,6 +20,7 @@ const MainRouter = () => {
           <div className=" flex justify-center items-center  h-full w-4/5">
             <Routes>
               <Route path="/" element={<MainDashboard />} />
+              {/* <Route path="/:userId" element={<MessagePage />} /> */}
             </Routes>
           </div>
         </div>

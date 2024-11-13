@@ -1,11 +1,10 @@
-import ChatInput from "../../../components/chatmessage/ChatInput";
-import MessageContainer from "../../../components/chatmessage/ChatMessageContainer";
+import ChatBox from "../../../components/ChatBox";
 
 const MainDashBoard = () => {
   return (
     <>
       <div className=" bg-slate-400 w-full">
-        <MessageContainer />
+        <ChatBox />
       </div>
     </>
   );

@@ -72,7 +72,7 @@ import { auth, provider } from "./config";
 import { signInWithPopup } from "firebase/auth";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
-import { setCredentials } from "../../../redux/feature/auth/authSlice";
+import { setCredentials } from "../../../redux/feature/authSlice";
 import { useLoginGoogleMutation } from "../../../redux/api/userApiSlice";
 import { toast } from "react-toastify";
 

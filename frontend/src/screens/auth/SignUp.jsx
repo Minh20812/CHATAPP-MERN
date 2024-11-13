@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "../../components/Loader";
 import { useRegisterMutation } from "../../redux/api/userApiSlice";
-import { setCredentials } from "../../redux/feature/auth/authSlice";
+import { setCredentials } from "../../redux/feature/authSlice";
 import { toast } from "react-toastify";
 import GoogleLogin from "./components/SocialLogin";
 

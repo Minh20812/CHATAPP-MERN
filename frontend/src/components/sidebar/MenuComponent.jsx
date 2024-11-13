@@ -3,7 +3,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useLogoutMutation } from "../../redux/api/userApiSlice";
-import { logout } from "../../redux/feature/auth/authSlice";
+import { logout } from "../../redux/feature/authSlice";
 
 const MenuComponent = () => {
   const [isOpen, setIsOpen] = useState(false);

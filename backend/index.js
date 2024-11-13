@@ -46,7 +46,7 @@ app.use(cookieParser());
 
 // Định tuyến API
 app.use("/api/users", userRoutes);
-app.use("/api/messages", messageRoutes);
+app.use("/api/chat", messageRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello World");
