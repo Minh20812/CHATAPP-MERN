@@ -1,58 +1,139 @@
-import Conversation from "../models/ConversationModel.js";
-import asyncHandler from "../middlewares/asyncHandler.js";
 import Message from "../models/MessageModel.js";
-import { getReceiverSocketId, io } from "../socket/socket.js";
+import asyncHandler from "../middlewares/asyncHandler.js";
 
-export const sendMessage = asyncHandler(async (req, res, next) => {
-  const { message } = req.body;
-  const { id: receiverId } = req.params;
-  const senderId = req.user._id;
+// Gửi tin nhắn
+const sendMessage = asyncHandler(async (req, res) => {
+  const { receiverId, content } = req.body;
+  const senderId = req.user._id; // Lấy ID người gửi từ token
+
+  if (!receiverId || !content) {
+    res.status(400);
+    throw new Error("Please provide receiver and message content");
+  }
 
   try {
-    let conversation = await Conversation.findOne({
-      participants: { $all: [senderId, receiverId] },
+    const newMessage = new Message({
+      sender: senderId,
+      receiver: receiverId,
+      content,
+      timestamp: new Date(),
     });
 
-    if (!conversation) {
-      conversation = await Conversation.create({
-        participants: [senderId, receiverId],
-      });
-    }
+    await newMessage.save();
 
-    const newMessage = new Message({ senderId, receiverId, message });
-
-    conversation.messages.push(newMessage._id);
-
-    await Promise.all([conversation.save(), newMessage.save()]);
-
-    const receiverSocketId = getReceiverSocketId(receiverId);
-    if (receiverSocketId) {
-      io.to(receiverSocketId).emit("newMessage", newMessage);
-    }
-
-    res.status(201).json(newMessage);
+    res.status(201).json({
+      _id: newMessage._id,
+      sender: newMessage.sender,
+      receiver: newMessage.receiver,
+      content: newMessage.content,
+      timestamp: newMessage.timestamp,
+    });
   } catch (error) {
-    console.error("Error in sendMessage controller:", error.message);
-    return next(error);
+    res.status(500);
+    throw new Error("Failed to send message: " + error.message);
   }
 });
 
-export const getMessages = asyncHandler(async (req, res) => {
+// Lấy tin nhắn giữa 2 người dùng
+const getMessagesBetweenUsers = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+  const currentUserId = req.user._id;
+
   try {
-    const { id: userToChatId } = req.params;
-    const senderId = req.user._id;
-
-    const conversation = await Conversation.findOne({
-      participants: { $all: [senderId, userToChatId] },
-    }).populate("messages"); // NOT REFERENCE BUT ACTUAL MESSAGES
-
-    if (!conversation) return res.status(200).json([]);
-
-    const messages = conversation.messages;
+    const messages = await Message.find({
+      $or: [
+        { sender: currentUserId, receiver: userId },
+        { sender: userId, receiver: currentUserId },
+      ],
+    })
+      .sort({ timestamp: 1 })
+      .populate("sender", "username")
+      .populate("receiver", "username");
 
     res.status(200).json(messages);
   } catch (error) {
-    console.log("Error in getMessages controller: ", error.message);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500);
+    throw new Error("Failed to fetch messages: " + error.message);
   }
 });
+
+// Lấy tất cả các cuộc hội thoại của người dùng hiện tại
+const getAllConversations = asyncHandler(async (req, res) => {
+  const currentUserId = req.user._id;
+
+  try {
+    // Tìm tất cả tin nhắn liên quan đến người dùng hiện tại
+    const conversations = await Message.aggregate([
+      {
+        $match: {
+          $or: [{ sender: currentUserId }, { receiver: currentUserId }],
+        },
+      },
+      {
+        $sort: { timestamp: -1 },
+      },
+      {
+        $group: {
+          _id: {
+            $cond: {
+              if: { $eq: ["$sender", currentUserId] },
+              then: "$receiver",
+              else: "$sender",
+            },
+          },
+          lastMessage: { $first: "$$ROOT" },
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "_id",
+          foreignField: "_id",
+          as: "userDetails",
+        },
+      },
+      {
+        $unwind: "$userDetails",
+      },
+    ]);
+
+    res.status(200).json(conversations);
+  } catch (error) {
+    res.status(500);
+    throw new Error("Failed to fetch conversations: " + error.message);
+  }
+});
+
+// Xóa tin nhắn
+const deleteMessage = asyncHandler(async (req, res) => {
+  const { messageId } = req.params;
+  const currentUserId = req.user._id;
+
+  try {
+    const message = await Message.findById(messageId);
+
+    if (!message) {
+      res.status(404);
+      throw new Error("Message not found");
+    }
+
+    // Kiểm tra xem người dùng hiện tại có phải là người gửi tin nhắn
+    if (message.sender.toString() !== currentUserId.toString()) {
+      res.status(403);
+      throw new Error("Not authorized to delete this message");
+    }
+
+    await message.remove();
+    res.status(200).json({ message: "Message deleted successfully" });
+  } catch (error) {
+    res.status(500);
+    throw new Error("Failed to delete message: " + error.message);
+  }
+});
+
+export {
+  sendMessage,
+  getMessagesBetweenUsers,
+  getAllConversations,
+  deleteMessage,
+};

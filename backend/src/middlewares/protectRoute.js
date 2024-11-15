@@ -1,35 +1,47 @@
 import jwt from "jsonwebtoken";
+import asyncHandler from "./asyncHandler.js";
 import User from "../models/UserModel.js";
 
-const protectRoute = async (req, res, next) => {
+// Middleware bảo vệ routes - Kiểm tra xác thực người dùng
+const protect = asyncHandler(async (req, res, next) => {
+  let token;
+
+  // Đọc JWT từ cookie
+  token = req.cookies.jwt;
+
+  if (!token) {
+    res.status(401);
+    throw new Error("Not authorized, no token");
+  }
+
   try {
-    const token = req.cookies.jwt;
-
-    if (!token) {
-      return res
-        .status(401)
-        .json({ error: "Unauthorized - No Token Provided" });
-    }
-
+    // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    if (!decoded) {
-      return res.status(401).json({ error: "Unauthorized - Invalid Token" });
+    // Lấy thông tin user từ token (trừ password)
+    req.user = await User.findById(decoded.userId).select("-password");
+
+    if (!req.user) {
+      res.status(401);
+      throw new Error("User not found");
     }
-
-    const user = await User.findById(decoded.userId).select("-password");
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    req.user = user;
 
     next();
   } catch (error) {
-    console.log("Error in protectRoute middleware: ", error.message);
-    res.status(500).json({ error: "Internal server error" });
+    console.error(error);
+    res.status(401);
+    throw new Error("Not authorized, token failed");
   }
-};
+});
 
-export default protectRoute;
+// Middleware kiểm tra quyền Admin
+const admin = asyncHandler(async (req, res, next) => {
+  if (req.user && req.user.isAdmin) {
+    next();
+  } else {
+    res.status(401);
+    throw new Error("Not authorized as admin");
+  }
+});
+
+export { protect, admin };

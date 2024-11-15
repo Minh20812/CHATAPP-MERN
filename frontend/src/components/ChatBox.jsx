@@ -1,32 +1,53 @@
-// frontend/src/components/ChatBox.js
 import React, { useEffect, useState } from "react";
-import io from "socket.io-client";
+// import io from "socket.io-client";
+import { useSelector } from "react-redux"; // if using Redux
 import Message from "./Message";
-
-const socket = io.connect("http://localhost:5000"); // Kết nối tới server WebSocket
+import MessageInput from "./MessageInput";
 
 const ChatBox = () => {
+  const currentUserId = useSelector((state) => state.auth.userInfo._id);
   const [messages, setMessages] = useState([]);
 
-  useEffect(() => {
-    // Lắng nghe sự kiện nhận tin nhắn từ server
-    socket.on("receive_message", (data) => {
-      setMessages((prevMessages) => [...prevMessages, data]);
-    });
+  // const socket = io("http://localhost:5000", {
+  //   query: { userId: currentUserId },
+  //   transports: ["websocket"],
+  // });
 
-    return () => {
-      socket.off("receive_message");
-    };
-  }, []);
+  // useEffect(() => {
+  //   const handleReceiveMessage = (data) => {
+  //     setMessages((prevMessages) => [...prevMessages, data]);
+  //   };
+
+  //   socket.on("receive_message", handleReceiveMessage);
+
+  //   return () => {
+  //     socket.off("receive_message", handleReceiveMessage);
+  //   };
+  // }, [socket]);
+
+  const sendMessage = (text) => {
+    if (text.trim()) {
+      const messageData = {
+        sender: "You",
+        text,
+        timestamp: new Date().toLocaleTimeString(),
+        isOwnMessage: true,
+      };
+
+      // socket.emit("send_message", messageData);
+      setMessages((prevMessages) => [...prevMessages, messageData]);
+    }
+  };
 
   return (
-    <div className="chat-box">
-      <h2>Chat</h2>
-      <div className="messages">
+    <div className="chat-box bg-white shadow-lg p-4 rounded-md h-full flex flex-col">
+      <h2 className="text-xl font-semibold mb-4">Chat</h2>
+      <div className="messages flex-1 overflow-y-auto mb-4">
         {messages.map((msg, index) => (
           <Message key={index} message={msg} />
         ))}
       </div>
+      <MessageInput onSendMessage={sendMessage} />
     </div>
   );
 };

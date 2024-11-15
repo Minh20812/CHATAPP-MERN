@@ -1,10 +1,17 @@
 import express from "express";
-import { getMessages, sendMessage } from "../controllers/messageController.js";
-import protectRoute from "../middlewares/protectRoute.js";
+import { protect } from "../middlewares/protectRoute.js";
+import {
+  sendMessage,
+  getMessagesBetweenUsers,
+  getAllConversations,
+  deleteMessage,
+} from "../controllers/messageController.js";
 
 const router = express.Router();
 
-router.get("/:id", getMessages);
-router.post("/send/:id", sendMessage);
+router.post("/send", protect, sendMessage);
+router.get("/conversations", protect, getAllConversations);
+router.get("/:userId", protect, getMessagesBetweenUsers);
+router.delete("/:messageId", protect, deleteMessage);
 
 export default router;
