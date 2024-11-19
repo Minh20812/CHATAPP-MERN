@@ -58,7 +58,7 @@ const Login = () => {
                   htmlFor="email"
                   className="block text-sm font-medium leading-6 text-gray-900"
                 >
-                  Email Address
+                  Email Address or Phone Number
                 </label>
                 <div className="mt-2">
                   <input
@@ -108,7 +108,6 @@ const Login = () => {
                     </svg>
                   </Checkbox>
                   <Label className="text-sm text-gray-500">
-                    {" "}
                     Remember for 30 days
                   </Label>
                 </Field>

@@ -76,7 +76,7 @@ const Register = () => {
 
           <div>
             <label htmlFor="email" className="block text-sm font-medium mb-1">
-              Email Address
+              Email Address or Phone Number
             </label>
             <input
               type="email"

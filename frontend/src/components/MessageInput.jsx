@@ -2,20 +2,23 @@ import React, { useState } from "react";
 import { useSendMessageMutation } from "../redux/api/chatApiSlice";
 import { useSelector } from "react-redux";
 
-const MessageInput = () => {
+const MessageInput = ({ onSendMessage, receiverId }) => {
   const [message, setMessage] = useState("");
   const [sendMessage] = useSendMessageMutation();
-
   const currentUserId = useSelector((state) => state.auth.userInfo._id);
 
   const handleSend = async () => {
-    console.log(currentUserId);
     if (!currentUserId || !message.trim()) return;
+
+    const messagePayload = {
+      senderId: currentUserId,
+      receiverId,
+      content: message,
+    };
+
     try {
-      await sendMessage({
-        receiverId: "user-id",
-        content: "Hello!",
-      });
+      await sendMessage(messagePayload);
+      onSendMessage(message);
       setMessage("");
     } catch (err) {
       console.error("Failed to send message:", err);

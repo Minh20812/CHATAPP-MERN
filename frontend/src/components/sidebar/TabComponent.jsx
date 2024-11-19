@@ -1,11 +1,40 @@
 import React, { useState } from "react";
 
-const TabComponent = () => {
+const TabComponent = ({ selectedUsers, setChatUser }) => {
   const [activeTab, setActiveTab] = useState("all");
+
   const renderContent = () => {
     switch (activeTab) {
       case "all":
-        return <div>Here are all your chats.</div>;
+        return (
+          <div className="bg-gray-800 p-4 rounded-lg shadow-md">
+            <ul className="space-y-4">
+              {selectedUsers.map((user) => (
+                <li
+                  key={user._id}
+                  className="flex items-center bg-gray-700 p-3 rounded-lg shadow hover:bg-gray-600 transition-colors cursor-pointer"
+                  onClick={() => setChatUser(user)}
+                >
+                  <div className="mr-4">
+                    {/* Placeholder avatar */}
+                    <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
+                      {user.username.charAt(0).toUpperCase()}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-lg font-medium text-white">
+                      {user.username}
+                    </p>
+                    <p className="text-sm text-gray-400">
+                      {user.email || user.phone}
+                    </p>
+                    <p className="text-sm text-gray-400">{user._id}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
       case "unread":
         return <div>These are your unread messages.</div>;
       case "personal":

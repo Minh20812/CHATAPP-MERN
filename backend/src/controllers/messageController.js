@@ -4,7 +4,7 @@ import asyncHandler from "../middlewares/asyncHandler.js";
 // Gửi tin nhắn
 const sendMessage = asyncHandler(async (req, res) => {
   const { receiverId, content } = req.body;
-  const senderId = req.user._id; // Lấy ID người gửi từ token
+  const senderId = req.user._id;
 
   if (!receiverId || !content) {
     res.status(400);
@@ -36,14 +36,13 @@ const sendMessage = asyncHandler(async (req, res) => {
 
 // Lấy tin nhắn giữa 2 người dùng
 const getMessagesBetweenUsers = asyncHandler(async (req, res) => {
-  const { userId } = req.params;
-  const currentUserId = req.user._id;
+  const { user1, user2 } = req.params;
 
   try {
     const messages = await Message.find({
       $or: [
-        { sender: currentUserId, receiver: userId },
-        { sender: userId, receiver: currentUserId },
+        { sender: user1, receiver: user2 },
+        { sender: user2, receiver: user1 },
       ],
     })
       .sort({ timestamp: 1 })

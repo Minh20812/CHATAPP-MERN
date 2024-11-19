@@ -30,8 +30,8 @@ export const chatApiSlice = apiSlice.injectEndpoints({
 
     // Lấy tin nhắn giữa 2 người dùng
     getMessagesBetweenUsers: builder.query({
-      query: (userId) => ({
-        url: `${MESSAGES_URL}/${userId}`,
+      query: ({ user1, user2 }) => ({
+        url: `${MESSAGES_URL}/${user1}/${user2}`,
       }),
       providesTags: ["Messages"],
       // Thời gian cache

@@ -64,6 +64,11 @@ export const userApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["User"],
     }),
+    searchUsersByEmail: builder.query({
+      query: (email) => ({
+        url: `${USERS_URL}/search?email=${email}`,
+      }),
+    }),
   }),
 });
 
@@ -77,4 +82,5 @@ export const {
   useDeleteUserMutation,
   useUpdateUserMutation,
   useGetUserDetailsQuery,
+  useSearchUsersByEmailQuery,
 } = userApiSlice;
