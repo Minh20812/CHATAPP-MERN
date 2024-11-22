@@ -21,8 +21,14 @@ const userSlice = createSlice({
     setToken: (state, action) => {
       state.token = action.payload;
     },
+    // setSocketConnection: (state, action) => {
+    //   state.socketConnection = action.payload;
+    // },
     setSocketConnection: (state, action) => {
-      state.socketConnection = action.payload;
+      state.socketConnection = {
+        isConnected: action.payload.isConnected,
+        url: action.payload.url,
+      };
     },
     setOnlineStatus: (state, action) => {
       state.onlineStatus = action.payload;

@@ -9,51 +9,52 @@ export const chatApiSlice = apiSlice.injectEndpoints({
         url: `${MESSAGES_URL}/send`,
         method: "POST",
         body: data,
+        validateStatus: (response, result) => {
+          return response.status === 200 && !result.isError;
+        },
       }),
-      // Tự động cập nhật cache sau khi gửi tin nhắn
-      async onQueryStarted({ receiverId }, { dispatch, queryFulfilled }) {
+      // Xử lý lỗi
+      transformErrorResponse: (response) => {
+        return {
+          status: response.status,
+          message: response.data?.message || "Failed to send message",
+        };
+      },
+      async onQueryStarted({ receiver }, { dispatch, queryFulfilled }) {
         try {
           const { data: newMessage } = await queryFulfilled;
-          // Cập nhật cache của cuộc trò chuyện
           dispatch(
             chatApiSlice.util.updateQueryData(
               "getMessagesBetweenUsers",
-              receiverId,
+              { user1: newMessage.sender, user2: receiver },
               (draft) => {
-                draft.push(newMessage);
+                if (!draft.find((msg) => msg._id === newMessage._id)) {
+                  draft.push(newMessage);
+                }
               }
             )
           );
-        } catch {}
+        } catch (err) {
+          console.error("Error updating cache:", err);
+        }
       },
     }),
 
-    // Lấy tin nhắn giữa 2 người dùng
     getMessagesBetweenUsers: builder.query({
       query: ({ user1, user2 }) => ({
         url: `${MESSAGES_URL}/${user1}/${user2}`,
+        validateStatus: (response, result) => {
+          return response.status === 200 && !result.isError;
+        },
       }),
-      providesTags: ["Messages"],
-      // Thời gian cache
-      keepUnusedDataFor: 0, // Không cache để luôn lấy tin nhắn mới nhất
-    }),
-
-    // Lấy tất cả cuộc hội thoại
-    getAllConversations: builder.query({
-      query: () => ({
-        url: `${MESSAGES_URL}/conversations`,
-      }),
-      providesTags: ["Conversations"],
-    }),
-
-    // Xóa tin nhắn
-    deleteMessage: builder.mutation({
-      query: (messageId) => ({
-        url: `${MESSAGES_URL}/${messageId}`,
-        method: "DELETE",
-      }),
-      // Cập nhật cache sau khi xóa
-      invalidatesTags: ["Messages"],
+      transformResponse: (response) => {
+        return Array.isArray(response) ? response : [];
+      },
+      providesTags: (result = []) => [
+        "Messages",
+        ...result.map(({ _id }) => ({ type: "Message", id: _id })),
+      ],
+      keepUnusedDataFor: 0,
     }),
   }),
 });

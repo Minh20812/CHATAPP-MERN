@@ -2,16 +2,22 @@ import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import http from "http";
 
 import connectDB from "./config/db.js";
 import userRoutes from "./src/routers/userRoutes.js";
 import messageRoutes from "./src/routers/messageRoutes.js";
+import setupSocket from "./src/socket/socket.js";
 
 dotenv.config();
 const port = process.env.PORT || 5001;
 
+// Kết nối database
 connectDB();
+
 const app = express();
+const server = http.createServer(app); // Tạo HTTP server
+setupSocket(server); // Khởi tạo socket
 
 app.use(
   cors({
@@ -35,8 +41,7 @@ app.use("/api/messages", messageRoutes);
 // Error Handler
 app.use((err, req, res, next) => {
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
-  res.status(statusCode);
-  res.json({
+  res.status(statusCode).json({
     message: err.message,
     stack: process.env.NODE_ENV === "production" ? null : err.stack,
   });
@@ -46,4 +51,5 @@ app.get("/", (req, res) => {
   res.send("Hello World");
 });
 
-app.listen(port, () => console.log(`Server running on port ${port}`));
+// Start server
+server.listen(port, () => console.log(`Server running on port ${port}`));
