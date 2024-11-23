@@ -1,10 +1,13 @@
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Message from "./Message";
 import MessageInput from "./MessageInput";
 import { useGetMessagesBetweenUsersQuery } from "../redux/api/chatApiSlice";
+import { addMessage } from "../redux/feature/chatSlice";
+import socket from "../socket";
 
 const ChatBox = ({ chatUser }) => {
+  const dispatch = useDispatch();
   const currentUserId = useSelector((state) => state.auth.userInfo._id);
   const {
     data: messages = [],
@@ -18,21 +21,46 @@ const ChatBox = ({ chatUser }) => {
   const sendMessage = (text) => {
     if (text.trim()) {
       const messageData = {
-        sender: "You",
+        sender: currentUserId,
+        receiver: chatUser._id,
         text,
-        timestamp: new Date().toLocaleTimeString(),
-        isOwnMessage: true,
+        timestamp: new Date().toISOString(),
       };
-      // Here, you could implement message sending logic
-      // setMessages((prevMessages) => [...prevMessages, messageData]);
+
+      // Gửi tin nhắn qua WebSocket
+      socket.emit("sendMessage", messageData);
+
+      // Cập nhật Redux store ngay lập tức
+      dispatch(addMessage(messageData));
     }
   };
 
   useEffect(() => {
-    if (chatUser) {
-      // Optional: reset or fetch data here if needed
+    if (!socket) {
+      console.error("Socket is not initialized.");
+      return;
     }
-  }, [chatUser]);
+
+    // Lắng nghe sự kiện "newMessage"
+    socket.on("newMessage", (message) => {
+      // Chỉ thêm tin nhắn nếu chưa có
+      if (!messages.some((msg) => msg.timestamp === message.timestamp)) {
+        dispatch(addMessage(message));
+      }
+    });
+
+    // Dọn dẹp sự kiện khi component bị hủy
+    return () => {
+      socket.off("newMessage");
+    };
+  }, [dispatch, messages]);
+
+  useEffect(() => {
+    const messageContainer = document.querySelector(".messages");
+    if (messageContainer) {
+      messageContainer.scrollTop = messageContainer.scrollHeight;
+    }
+  }, [messages]);
 
   if (isLoading) return <p>Loading messages...</p>;
   if (isError) return <p>Error loading messages.</p>;

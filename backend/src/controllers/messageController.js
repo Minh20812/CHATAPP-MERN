@@ -1,5 +1,6 @@
 import Message from "../models/MessageModel.js";
 import asyncHandler from "../middlewares/asyncHandler.js";
+import { getReceiverSocketId, io } from "../socket/socket.js";
 
 // Gửi tin nhắn
 const sendMessage = asyncHandler(async (req, res) => {
@@ -20,6 +21,11 @@ const sendMessage = asyncHandler(async (req, res) => {
     });
 
     await newMessage.save();
+
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", newMessage);
+    }
 
     res.status(201).json({
       _id: newMessage._id,

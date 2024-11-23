@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import socket from "../../socket";
 
 const chatSlice = createSlice({
   name: "chat",
@@ -29,4 +30,21 @@ export const {
   setMessages,
   setTypingStatus,
 } = chatSlice.actions;
+
+// Socket event listeners
+export const initializeSocketEvents = (dispatch) => {
+  if (!socket) {
+    console.error("Socket is not initialized.");
+    return;
+  }
+
+  socket.on("newMessage", (message) => {
+    dispatch(addMessage(message));
+  });
+
+  socket.on("typingStatus", (data) => {
+    dispatch(setTypingStatus(data));
+  });
+};
+
 export default chatSlice.reducer;
