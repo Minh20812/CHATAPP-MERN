@@ -9,6 +9,7 @@ import socket from "../socket";
 const ChatBox = ({ chatUser }) => {
   const dispatch = useDispatch();
   const currentUserId = useSelector((state) => state.auth.userInfo._id);
+
   const {
     data: messages = [],
     isLoading,

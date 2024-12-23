@@ -5,13 +5,11 @@ export const chatApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     // Gửi tin nhắn
     sendMessage: builder.mutation({
-      query: (data) => ({
-        url: `${MESSAGES_URL}/send`,
+      query: (messageData) => ({
+        url: "/api/messages/send",
         method: "POST",
-        body: data,
-        validateStatus: (response, result) => {
-          return response.status === 200 && !result.isError;
-        },
+        body: messageData,
+        credentials: "include",
       }),
       // Xử lý lỗi
       transformErrorResponse: (response) => {

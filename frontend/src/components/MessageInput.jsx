@@ -41,34 +41,47 @@ const MessageInput = ({ receiverId }) => {
     });
 
     return () => {
-      newSocket.off("connect");
-      newSocket.off("connect_error");
-      newSocket.off("onlineUser");
-      newSocket.disconnect();
-      dispatch(setSocketConnection(false));
+      if (newSocket) {
+        newSocket.disconnect();
+
+        setSocket(null);
+
+        dispatch(setSocketConnection(false));
+      }
     };
   }, [currentUserId, token, dispatch]);
 
   const handleSend = async () => {
-    if (!currentUserId || !message.trim()) return;
+    if (!message.trim() || !receiverId) {
+      console.error("Missing required fields:", {
+        message: message.trim(),
+        receiverId,
+      });
+
+      return;
+    }
+
+    // Create timestamp with UTC+7
+    const timestamp = new Date().toLocaleString("en-US", {
+      timeZone: "Asia/Bangkok", // UTC+7
+    });
 
     const messagePayload = {
-      sender: currentUserId,
-      receiver: receiverId,
-      text: message.trim(),
-      msgByUserId: currentUserId,
+      receiverId: receiverId,
+      content: message.trim(),
+      timestamp: timestamp,
     };
+
+    console.log("Message payload:", messagePayload); // Add this line
 
     try {
       // Gửi tin nhắn qua API trước
       const response = await sendMessage(messagePayload).unwrap();
+      console.log("Message sent successfully:", response);
 
       // Nếu API thành công, gửi qua socket
       if (socket?.connected) {
-        socket.emit("new message", {
-          ...messagePayload,
-          _id: response._id, // Thêm ID từ response API
-        });
+        socket.emit("new message", response);
       }
 
       setMessage("");

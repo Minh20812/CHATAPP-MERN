@@ -4,8 +4,12 @@ import { getReceiverSocketId, io } from "../socket/socket.js";
 
 // Gửi tin nhắn
 const sendMessage = asyncHandler(async (req, res) => {
-  const { receiverId, content } = req.body;
+  const { receiverId, content, timestamp } = req.body;
   const senderId = req.user._id;
+
+  console.log("Request body:", req.body); // Add this line
+
+  console.log("Sender ID:", senderId); // Add this line
 
   if (!receiverId || !content) {
     res.status(400);
@@ -13,11 +17,20 @@ const sendMessage = asyncHandler(async (req, res) => {
   }
 
   try {
+    // Convert timestamp to Bangkok timezone
+
+    const bangkokTime = new Date(timestamp || new Date()).toLocaleString(
+      "en-US",
+      {
+        timeZone: "Asia/Bangkok",
+      }
+    );
+
     const newMessage = new Message({
       sender: senderId,
       receiver: receiverId,
       content,
-      timestamp: new Date(),
+      timestamp: bangkokTime,
     });
 
     await newMessage.save();
@@ -35,6 +48,7 @@ const sendMessage = asyncHandler(async (req, res) => {
       timestamp: newMessage.timestamp,
     });
   } catch (error) {
+    console.error("Error sending message:", error.message); // Add this line
     res.status(500);
     throw new Error("Failed to send message: " + error.message);
   }
