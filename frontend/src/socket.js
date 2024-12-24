@@ -1,5 +1,15 @@
 import io from "socket.io-client";
 
-const socket = io("http://localhost:5000/"); // URL của server Socket.IO
+const SOCKET_URL = import.meta.env.PROD
+  ? "https://chatapp-mern-vhhz.onrender.com" // Production URL
+  : "http://localhost:5000"; // Development URL
+
+const socket = io(SOCKET_URL, {
+  reconnection: true,
+  reconnectionAttempts: 5,
+  reconnectionDelay: 1000,
+  autoConnect: true,
+  withCredentials: true,
+});
 
 export default socket;

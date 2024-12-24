@@ -23,9 +23,15 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "https://chatapp-mern-vhhz.onrender.com/",
+        target: "https://chatapp-mern-vhhz.onrender.com",
         changeOrigin: true,
         secure: false,
+      },
+      "/socket.io": {
+        target: "https://chatapp-mern-vhhz.onrender.com",
+        changeOrigin: true,
+        secure: false,
+        ws: true,
       },
     },
   },

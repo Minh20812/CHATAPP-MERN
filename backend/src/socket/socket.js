@@ -12,7 +12,11 @@ const io = new Server(server, {
       "https://chatapp-git-main-minh20812s-projects.vercel.app",
       "http://localhost:5173",
     ],
+    methods: ["GET", "POST"],
+    credentials: true,
+    transports: ["websocket", "polling"],
   },
+  allowEIO3: true,
 });
 
 export function getReceiverSocketId(userId) {
