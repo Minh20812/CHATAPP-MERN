@@ -217,16 +217,22 @@ const updateUserById = asyncHandler(async (req, res) => {
 
 const searchUser = asyncHandler(async (req, res) => {
   const { email } = req.query;
+
   if (!email) {
-    return res.status(400).json({ message: "Email is required" });
+    return res.status(400).json({ message: "Email parameter is required" });
   }
 
   try {
-    const user = await User.find({ email: { $regex: email, $options: "i" } });
-    res.json(user);
+    const users = await User.find({
+      email: { $regex: email, $options: "i" },
+    }).select("-password");
+
+    res.json(users);
   } catch (error) {
+    console.error("Search error:", error);
     res.status(500).json({
-      message: "Server error during search: " + error.message,
+      message: "Server error during search",
+      error: error.message,
     });
   }
 });

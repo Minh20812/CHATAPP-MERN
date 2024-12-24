@@ -26,9 +26,10 @@ export default defineConfig({
         target: "https://chatapp-mern-vhhz.onrender.com",
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api/, ""), // Remove /api prefix
+        rewrite: (path) => path.replace(/^\/api/, "api"), // Remove /api prefix
         headers: {
           "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Credentials": "true",
           "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,PATCH,OPTIONS",
           "Access-Control-Allow-Headers": "Content-Type, Authorization",
         },
