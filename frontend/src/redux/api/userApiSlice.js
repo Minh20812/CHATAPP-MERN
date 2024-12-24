@@ -66,7 +66,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
     }),
     searchUsersByEmail: builder.query({
       query: (email) => ({
-        url: `/users/search?email=${encodeURIComponent(email)}`,
+        url: `api/users/search?email=${encodeURIComponent(email)}`,
         method: "GET",
         credentials: "include",
       }),
