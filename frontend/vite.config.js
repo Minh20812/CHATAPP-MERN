@@ -26,6 +26,7 @@ export default defineConfig({
         target: "https://chatapp-mern-vhhz.onrender.com",
         changeOrigin: true,
         secure: false,
+        rewrite: (path) => path.replace(/^\/api/, "/api"), // Remove double slash
         headers: {
           "Access-Control-Allow-Origin": "*",
         },
@@ -35,6 +36,7 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
         ws: true,
+        rewrite: (path) => path.replace(/^\/socket\.io/, "/socket.io"),
         headers: {
           "Access-Control-Allow-Origin": "*",
         },
