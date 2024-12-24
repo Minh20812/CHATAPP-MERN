@@ -20,8 +20,8 @@ connectDB();
 app.use(
   cors({
     origin: [
-      // "https://chatapp-mern-git-main-minh20812s-projects.vercel.app/",
-      // "https://chatapp-mern-git-main-minh20812s-projects.vercel.app/",
+      "https://chatapp-liard-alpha.vercel.app/",
+      "https://chatapp-git-main-minh20812s-projects.vercel.app/",
       "http://localhost:5173",
     ],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
