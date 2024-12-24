@@ -24,7 +24,7 @@ app.use(
       // "https://todolist---app-2ac04.firebaseapp.com",
       "http://localhost:5173",
     ],
-    // methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
   })
 );
