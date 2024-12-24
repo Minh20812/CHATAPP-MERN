@@ -150,9 +150,35 @@ const deleteMessage = asyncHandler(async (req, res) => {
   }
 });
 
+// Add delete messages controller
+const deleteAllMessages = asyncHandler(async (req, res) => {
+  const { user1, user2 } = req.params;
+
+  try {
+    const result = await Message.deleteMany({
+      $or: [
+        { sender: user1, receiver: user2 },
+        { sender: user2, receiver: user1 },
+      ],
+    });
+
+    console.log("Delete result:", result); // Add logging
+
+    res.status(200).json({
+      message: "Messages deleted successfully",
+      deletedCount: result.deletedCount,
+    });
+  } catch (error) {
+    console.error("Delete error:", error);
+    res.status(500);
+    throw new Error("Failed to delete messages: " + error.message);
+  }
+});
+
 export {
   sendMessage,
   getMessagesBetweenUsers,
   getAllConversations,
   deleteMessage,
+  deleteAllMessages,
 };

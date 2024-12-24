@@ -54,6 +54,22 @@ export const chatApiSlice = apiSlice.injectEndpoints({
       ],
       keepUnusedDataFor: 0,
     }),
+
+    // deleteMessages: builder.mutation({
+    //   query: ({ user1, user2 }) => ({
+    //     url: `/api/messages/${user1}/${user2}`,
+    //     method: "DELETE",
+    //   }),
+    // }),
+
+    deleteAllMessages: builder.mutation({
+      query: ({ user1, user2 }) => ({
+        url: `/api/messages/all/${user1}/${user2}`,
+        method: "DELETE",
+        credentials: "include",
+      }),
+      invalidatesTags: ["Messages"],
+    }),
   }),
 });
 
@@ -62,4 +78,5 @@ export const {
   useGetMessagesBetweenUsersQuery,
   useGetAllConversationsQuery,
   useDeleteMessageMutation,
+  useDeleteAllMessagesMutation,
 } = chatApiSlice;

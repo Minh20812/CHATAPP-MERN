@@ -2,12 +2,19 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Message from "./Message";
 import MessageInput from "./MessageInput";
-import { useGetMessagesBetweenUsersQuery } from "../redux/api/chatApiSlice";
+import {
+  useGetMessagesBetweenUsersQuery,
+  useDeleteAllMessagesMutation,
+} from "../redux/api/chatApiSlice";
 import { addMessage } from "../redux/feature/chatSlice";
 import socket from "../socket";
 
 const ChatBox = ({ chatUser }) => {
+  const [deleteAllMessages, { isLoading: isDeleting }] =
+    useDeleteAllMessagesMutation();
+
   const dispatch = useDispatch();
+
   const currentUserId = useSelector((state) => state.auth.userInfo._id);
 
   const {
@@ -52,6 +59,24 @@ const ChatBox = ({ chatUser }) => {
     }
   };
 
+  const handleDeleteAll = async () => {
+    if (window.confirm("Are you sure you want to delete all messages?")) {
+      try {
+        await deleteAllMessages({
+          user1: currentUserId,
+
+          user2: chatUser._id,
+        }).unwrap();
+        await refetch();
+        alert("Messages deleted successfully");
+      } catch (err) {
+        console.error("Failed to delete messages:", err);
+
+        alert("Failed to delete messages. Please try again.");
+      }
+    }
+  };
+
   useEffect(() => {
     if (!socket) return;
 
@@ -87,14 +112,23 @@ const ChatBox = ({ chatUser }) => {
 
   return (
     <div className="chat-box bg-white shadow-lg p-4 rounded-md h-[calc(100vh-2rem)] flex flex-col">
-      <div className="flex gap-2 mb-4">
-        <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
-          {chatUser.username.charAt(0).toUpperCase()}
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex gap-2">
+          <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
+            {chatUser.username.charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <h2 className="text-xl font-semibold">{chatUser.username}</h2>
+            <p className="text-sm text-gray-400">{chatUser.email}</p>
+          </div>
         </div>
-        <div>
-          <h2 className="text-xl font-semibold">{chatUser.username}</h2>
-          <p className="text-sm text-gray-400">{chatUser.email}</p>
-        </div>
+        <button
+          onClick={handleDeleteAll}
+          disabled={isDeleting}
+          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 disabled:opacity-50"
+        >
+          {isDeleting ? "Deleting..." : "Delete All"}
+        </button>
       </div>
       <div className="messages flex-1 overflow-y-auto px-2 mb-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
         {messages.map((msg, index) => (
