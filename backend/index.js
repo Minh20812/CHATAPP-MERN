@@ -20,8 +20,8 @@ connectDB();
 app.use(
   cors({
     origin: [
-      // "https://todolist-app-theta-five.vercel.app",
-      // "https://todolist---app-2ac04.firebaseapp.com",
+      // "https://chatapp-mern-git-main-minh20812s-projects.vercel.app/",
+      // "https://chatapp-mern-git-main-minh20812s-projects.vercel.app/",
       "http://localhost:5173",
     ],
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
