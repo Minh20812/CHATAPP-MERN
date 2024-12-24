@@ -1,6 +1,6 @@
 export const BASE_URL =
   process.env.NODE_ENV === "production"
-    ? "https://chatapp-mern-vhhz.onrender.com/"
+    ? "https://chatapp-mern-vhhz.onrender.com"
     : "";
 
 // export const BASE_URL =
