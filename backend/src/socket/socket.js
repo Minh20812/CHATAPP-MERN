@@ -14,9 +14,10 @@ const io = new Server(server, {
     ],
     methods: ["GET", "POST"],
     credentials: true,
-    transports: ["websocket", "polling"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   },
-  allowEIO3: true,
+  path: "/socket.io/",
+  transports: ["websocket", "polling"],
 });
 
 export function getReceiverSocketId(userId) {

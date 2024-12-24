@@ -26,12 +26,18 @@ export default defineConfig({
         target: "https://chatapp-mern-vhhz.onrender.com",
         changeOrigin: true,
         secure: false,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+        },
       },
       "/socket.io": {
         target: "https://chatapp-mern-vhhz.onrender.com",
         changeOrigin: true,
         secure: false,
         ws: true,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+        },
       },
     },
   },

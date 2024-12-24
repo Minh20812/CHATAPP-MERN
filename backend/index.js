@@ -24,7 +24,8 @@ app.use(
       "https://chatapp-git-main-minh20812s-projects.vercel.app",
       "http://localhost:5173",
     ],
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
