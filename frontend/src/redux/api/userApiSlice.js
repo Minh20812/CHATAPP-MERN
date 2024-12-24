@@ -66,8 +66,17 @@ export const userApiSlice = apiSlice.injectEndpoints({
     }),
     searchUsersByEmail: builder.query({
       query: (email) => ({
-        url: `${USERS_URL}/search?email=${email}`,
+        url: `/users/search?email=${encodeURIComponent(email)}`,
+        method: "GET",
+        credentials: "include",
       }),
+      // Add error handling
+      transformErrorResponse: (response) => {
+        return {
+          status: response.status,
+          message: response.data?.message || "Failed to search users",
+        };
+      },
     }),
   }),
 });
