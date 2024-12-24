@@ -5,7 +5,6 @@ import Loader from "../../components/Loader";
 import { useRegisterMutation } from "../../redux/api/userApiSlice";
 import { setCredentials } from "../../redux/feature/authSlice";
 import { toast } from "react-toastify";
-import GoogleLogin from "./components/SocialLogin";
 
 const Register = () => {
   const [username, setName] = useState("");
@@ -132,10 +131,6 @@ const Register = () => {
 
           {isLoading && <Loader />}
         </form>
-
-        <div className="mt-6">
-          <GoogleLogin />
-        </div>
 
         <p className="mt-4 text-center text-sm">
           Already have an account?{" "}

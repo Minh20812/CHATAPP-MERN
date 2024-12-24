@@ -6,7 +6,6 @@ import { useLoginMutation } from "../../redux/api/userApiSlice";
 import { setCredentials } from "../../redux/feature/authSlice";
 import { toast } from "react-toastify";
 import { Checkbox, Label, Field } from "@headlessui/react";
-import GoogleLogin from "./components/SocialLogin";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -133,10 +132,6 @@ const Login = () => {
 
               {isLoading && <Loader />}
             </form>
-
-            <div className="mt-6">
-              <GoogleLogin />
-            </div>
           </div>
 
           <p className="mt-10 text-center text-sm text-gray-500">
