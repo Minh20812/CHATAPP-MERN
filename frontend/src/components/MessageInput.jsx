@@ -22,7 +22,7 @@ const MessageInput = ({ receiverId }) => {
       auth: { token },
       reconnection: true,
       reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
+      reconnectionDelay: 1000, // Đặt lại kết nối sau 1000ms !!! Important
     });
 
     newSocket.on("connect", () => {
@@ -72,12 +72,12 @@ const MessageInput = ({ receiverId }) => {
       timestamp: timestamp,
     };
 
-    console.log("Message payload:", messagePayload); // Add this line
+    // console.log("Message payload:", messagePayload);
 
     try {
       // Gửi tin nhắn qua API trước
       const response = await sendMessage(messagePayload).unwrap();
-      console.log("Message sent successfully:", response);
+      // console.log("Message sent successfully:", response);
 
       // Nếu API thành công, gửi qua socket
       if (socket?.connected) {

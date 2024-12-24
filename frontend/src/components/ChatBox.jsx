@@ -14,47 +14,66 @@ const ChatBox = ({ chatUser }) => {
     data: messages = [],
     isLoading,
     isError,
-  } = useGetMessagesBetweenUsersQuery({
-    user1: currentUserId,
-    user2: chatUser._id,
-  });
+    refetch, // Thêm refetch từ query hook
+  } = useGetMessagesBetweenUsersQuery(
+    {
+      user1: currentUserId,
+      user2: chatUser._id,
+    },
+    {
+      // Add polling to check for new messages
+      pollingInterval: 1000,
+      // Ensure we get fresh data
+      refetchOnMountOrArgChange: true,
+    }
+  );
 
-  const sendMessage = (text) => {
+  const sendMessage = async (text) => {
     if (text.trim()) {
       const messageData = {
         sender: currentUserId,
         receiver: chatUser._id,
-        text,
+        content: text.trim(),
         timestamp: new Date().toISOString(),
       };
-
       // Gửi tin nhắn qua WebSocket
-      socket.emit("sendMessage", messageData);
+      try {
+        // Emit to socket first
+        socket.emit("sendMessage", messageData);
 
-      // Cập nhật Redux store ngay lập tức
-      dispatch(addMessage(messageData));
+        // Add message to Redux store
+        dispatch(addMessage(messageData));
+
+        // Force refetch messages
+        await refetch();
+      } catch (err) {
+        console.error("Error sending message:", err);
+      }
     }
   };
 
   useEffect(() => {
-    if (!socket) {
-      console.error("Socket is not initialized.");
-      return;
-    }
+    if (!socket) return;
 
-    // Lắng nghe sự kiện "newMessage"
-    socket.on("newMessage", (message) => {
-      // Chỉ thêm tin nhắn nếu chưa có
-      if (!messages.some((msg) => msg.timestamp === message.timestamp)) {
+    const handleNewMessage = async (message) => {
+      // Only handle messages related to current chat
+      if (
+        message.sender === chatUser._id ||
+        message.receiver === chatUser._id
+      ) {
+        // Add to Redux store
         dispatch(addMessage(message));
+        // Refetch latest messages
+        await refetch();
       }
-    });
-
-    // Dọn dẹp sự kiện khi component bị hủy
-    return () => {
-      socket.off("newMessage");
     };
-  }, [dispatch, messages]);
+
+    socket.on("newMessage", handleNewMessage);
+
+    return () => {
+      socket.off("newMessage", handleNewMessage);
+    };
+  }, [socket, chatUser._id, dispatch, refetch]);
 
   useEffect(() => {
     const messageContainer = document.querySelector(".messages");
@@ -67,8 +86,8 @@ const ChatBox = ({ chatUser }) => {
   if (isError) return <p>Error loading messages.</p>;
 
   return (
-    <div className="chat-box bg-white shadow-lg p-4 rounded-md h-full flex flex-col">
-      <div className="flex gap-2">
+    <div className="chat-box bg-white shadow-lg p-4 rounded-md h-[calc(100vh-2rem)] flex flex-col">
+      <div className="flex gap-2 mb-4">
         <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
           {chatUser.username.charAt(0).toUpperCase()}
         </div>
@@ -77,7 +96,7 @@ const ChatBox = ({ chatUser }) => {
           <p className="text-sm text-gray-400">{chatUser.email}</p>
         </div>
       </div>
-      <div className="messages flex-1 overflow-y-auto mb-4">
+      <div className="messages flex-1 overflow-y-auto px-2 mb-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
         {messages.map((msg, index) => (
           <Message
             key={index}

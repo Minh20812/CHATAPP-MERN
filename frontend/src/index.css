@@ -3,3 +3,17 @@
 @tailwind utilities;
 @import url("https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,600&display=swap");
 @import "@radix-ui/themes/styles.css";
+
+/* Add custom scrollbar styles */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: #cbd5e0;
+  border-radius: 3px;
+}
