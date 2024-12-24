@@ -8,6 +8,6 @@ export const BASE_URL =
 
 // export const BASE_URL = "";
 
-export const USERS_URL = "/api/users"; /*`${BASE_URL}/api/users`*/
-export const MESSAGES_URL = "/api/messages"; /*`${BASE_URL}/api/messages`*/
+export const USERS_URL = `${BASE_URL}/api/users`;
+export const MESSAGES_URL = `${BASE_URL}/api/messages`;
 export const CONVERSATIONS_URL = "/api/conversations";
