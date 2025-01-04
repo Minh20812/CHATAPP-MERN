@@ -18,11 +18,16 @@ const MessageInput = ({ receiverId }) => {
   useEffect(() => {
     if (!currentUserId || !token) return;
 
-    const newSocket = io("http://localhost:5000", {
+    const SOCKET_URL = import.meta.env.PROD
+      ? "https://chatapp-mern-vhhz.onrender.com"
+      : "http://localhost:5000";
+
+    const newSocket = io(SOCKET_URL, {
       auth: { token },
       reconnection: true,
       reconnectionAttempts: 5,
-      reconnectionDelay: 1000, // Đặt lại kết nối sau 1000ms !!! Important
+      reconnectionDelay: 1000,
+      transports: ["websocket", "polling"],
     });
 
     newSocket.on("connect", () => {
